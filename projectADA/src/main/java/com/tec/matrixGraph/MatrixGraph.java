@@ -15,11 +15,17 @@ public class MatrixGraph {
         Random randomNum = new Random();
         for (int i = 0; i < graph.length; i++) {
             for (int j = 0; j < graph[0].length; j++) {
-                // Generar un número aleatorio entre 1 y 250
-                graph[i][j] = randomNum.nextInt(250) + 1;
+                if (i == j) {
+                    // La distancia de un vértice a sí mismo es 0
+                    graph[i][j] = 0;
+                } else {
+                    // Generar un número aleatorio entre 1 y 250
+                    graph[i][j] = randomNum.nextInt(250) + 1;
+                }
             }
         }
     }
+    
     //Método para imprimir la matriz
     public static void printGraph() {
         System.out.println("Matriz de adyacencia");

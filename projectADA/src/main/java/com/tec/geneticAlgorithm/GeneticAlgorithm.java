@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
@@ -68,6 +69,64 @@ public class GeneticAlgorithm{
         System.out.println("Mutado: " + mutated.path + ", Distancia: " + mutated.distance);
         System.out.println("--------------------");
     }
+    public static void printBestnewRoutes(List<Route> bestNewRoutes) {
+        System.out.println("Mejores nuevas rutas: ");
+        for (int i = 0; i < bestNewRoutes.size(); i++) {
+            System.out.println("Ruta " + i + ": " + bestNewRoutes.get(i).path + ", Distancia: " + bestNewRoutes.get(i).distance);
+        }
+        System.out.println("--------------------");
+    }
+    public static Route mutate(Route route, List<Route> population, int[][] graph) {
+        boolean isDuplicate = false;
+    
+        for (Route r : population) {
+            if (route.path.equals(r.path)) {
+                isDuplicate = true;
+                break;
+            }
+        }
+    
+        // Si se encuentra una ruta duplicada, aplicar una mutación
+        if (isDuplicate && route.path.size() > 2) {
+            List<Integer> originalPath = new ArrayList<>(route.path);
+            int originalDistance = route.distance;
+    
+            int maxAttempts = 100;
+            int attempts = 0;
+    
+            while (attempts < maxAttempts) {
+                int index1 = new Random().nextInt(route.path.size() - 2) + 1;
+                int index2 = new Random().nextInt(route.path.size() - 2) + 1;
+    
+                // Validación de la existencia de una arista entre los vértices a intercambiar
+                if (graph[route.path.get(index1)][route.path.get(index2)] > 0) {
+                    Collections.swap(route.path, index1, index2);
+                    route.distance = Route.calculateDistance(route.path, graph);
+    
+                    // Si la mutación mejora la distancia y no existe en la población original, salir del bucle
+                    if (route.distance < originalDistance && population.stream().noneMatch(r -> r.path.equals(route.path))) {
+                        printMutation(new Route(originalPath, originalDistance), route);
+                        break;
+                    } else {
+                        // Deshacer la mutación si no mejora la distancia o ya existe en la población original
+                        route.path = new ArrayList<>(originalPath);
+                        route.distance = originalDistance;
+                    }
+                }
+    
+                attempts++;
+            }
+    
+            // Si después de maxAttempts la mutación no mejora la distancia, eliminar la ruta
+            if (attempts == maxAttempts) {
+                return null;
+            }
+        }
+    
+        return route;
+    }
+    
+    
     public static List<Route> geneticAlgorithm(int populationSize, int origin, int destination, int generations, int[][] graph) {
         List<Route> population = generateInitialPopulation(populationSize, origin, destination, graph);
         int po = 0;
@@ -80,13 +139,12 @@ public class GeneticAlgorithm{
 
             while (newPopulation.size() < populationSize * 2) {
                 Random random = new Random();
-                int index1 = random.nextInt(population.size());
-                int index2 = random.nextInt(population.size());
-                while (index1 == index2){
-                    index2 = random.nextInt(population.size());
-                }
-                Route parent1 = population.get(index1);
-                Route parent2 = population.get(index2);
+                Route parent1 = population.get(random.nextInt(population.size()));
+                Route parent2;
+                do {
+                    parent2 = population.get(random.nextInt(population.size()));
+                } while (parent1.path.equals(parent2.path));
+
                 
                 // Crear rutas para los hijos
                 List<Integer> childPath1 = new ArrayList<>();
@@ -107,55 +165,37 @@ public class GeneticAlgorithm{
                 if (childPath1.get(0) == origin && childPath1.get(childPath1.size() - 1) == destination) {
                     int childDistance = Route.calculateDistance(childPath1, graph);
                     Route child1 = new Route(childPath1, childDistance);
-                    if (newPopulation.stream().noneMatch(route -> route.path.equals(childPath1)) && population.stream().noneMatch(route -> route.path.equals(childPath1))) {
+                    if (newPopulation.stream().noneMatch(route -> route.path.equals(childPath1))) {
                         newPopulation.add(child1);
                         childrens.add(child1);
                     }
+                    else{
+                        
+                        if (child1 != null){
+                            newPopulation.add(child1);
+                            childrens.add(child1);
+                        }
+                    }
                 }
-                
+                                
                 if (childPath2.get(0) == origin && childPath2.get(childPath2.size() - 1) == destination) {
                     int childDistance = Route.calculateDistance(childPath2, graph);
                     Route child2 = new Route(childPath2, childDistance);
-                    if (newPopulation.stream().noneMatch(route -> route.path.equals(childPath2)) && population.stream().noneMatch(route -> route.path.equals(childPath2))) {
+                    if (newPopulation.stream().noneMatch(route -> route.path.equals(childPath2))) {
                         newPopulation.add(child2);
                         childrens.add(child2);
                     }
-                }
-                
-                printCrossover(parent1, parent2, childrens);
-                // Mutation
-            /*for (int i = 0; i < newPopulation.size(); i++) {
-                Route route = newPopulation.get(i);
-                boolean isDuplicate = false;
-    
-                for (int j = 0; j < newPopulation.size(); j++) {
-                    if (i != j && route.path.equals(newPopulation.get(j).path)) {
-                        isDuplicate = true;
-                        break;
-                    }
-                }
-    
-                // Si se encuentra una ruta duplicada, aplicar una mutación
-                if (isDuplicate) {
-                    List<Integer> originalPath = new ArrayList<>(route.path);
-                    int originalDistance = route.distance;
-    
-                    int index3 = new Random().nextInt(route.path.size());
-                    int index4 = new Random().nextInt(route.path.size());
-                    Collections.swap(route.path, index3, index4);
-                    route.distance = Route.calculateDistance(route.path, graph);
-    
-                    // Si la mutación empeora la distancia, deshacer la mutación
-                    if (route.distance > originalDistance) {
-                        newPopulation.remove(i);
-                        i--; // Decrementar el índice para mantenerse en el mismo lugar después de eliminar
+                    else{
                         
-                    }
-                    else {
-                        printMutation(new Route(originalPath, originalDistance), route);
+                        if (child2 != null){
+                            newPopulation.add(child2);
+                            childrens.add(child2);
+                        }
                     }
                 }
-            } */
+            
+                printCrossover(parent1, parent2, childrens);
+                
             }
         
             //Actualizar la población para la próxima generación
@@ -177,9 +217,3 @@ public class GeneticAlgorithm{
     }
     
 }
-/*
- * Errores:
- * Mas de 20 hijos
- * Population es 5
- * 
- */

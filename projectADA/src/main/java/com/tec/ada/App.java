@@ -17,9 +17,9 @@ public class App
         
         int populationSize = 50;
         MatrixGraph.createGraphs(populationSize);
-        int generations = populationSize * 2;
+        int generations = 20;
         MatrixGraph.printGraph();
-        List<Route> finalPopulation = GeneticAlgorithm.geneticAlgorithm(populationSize, 0, 8, generations, MatrixGraph.graph);
+        List<Route> finalPopulation = GeneticAlgorithm.geneticAlgorithm(populationSize, 0, 9, generations, MatrixGraph.graph);
     }
    
 }

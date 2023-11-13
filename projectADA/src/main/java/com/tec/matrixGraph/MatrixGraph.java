@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Random;
 import com.tec.geneticAlgorithm.GeneticAlgorithm;
 
+/**
+ * La clase MatrixGraph crea un gráfico con distancias aleatorias entre vértices.
+ */
 public class MatrixGraph {
 
     public static int graph[][];
@@ -11,6 +14,11 @@ public class MatrixGraph {
     public static int shortRange = 99999;
     public static String mRouter = "";
     
+    /**
+     * La función crea un gráfico con n vértices y asigna pesos aleatorios a los bordes.
+     * 
+     * @param n El parámetro "n" representa el número de vértices del gráfico.
+     */
     public static void createGraphs(int n) {
         GeneticAlgorithm.countAssig++;
         graph = new int[n][n]; 
@@ -36,7 +44,10 @@ public class MatrixGraph {
         }
     }
     
-    //Método para imprimir la matriz
+    
+    /**
+     * La función "printGraph" imprime la matriz de adyacencia de un gráfico.
+     */
     public static void printGraph() {
         System.out.println("Matriz de adyacencia");
         for (int i = 0; i < graph.length; i++) {

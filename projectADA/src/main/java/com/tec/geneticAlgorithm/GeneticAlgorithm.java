@@ -4,17 +4,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
-
-
 import com.tec.geneticAlgorithm.Route;
+
 public class GeneticAlgorithm{
     public static int countAssig = 0;
     public static int countComp = 0;
     public static int countMemory = 0;
-    
-
-    
-
     /**
      * La función genera una población inicial de rutas para un algoritmo genético, donde cada ruta
      * comienza desde un origen determinado y termina en un destino determinado en un gráfico.
@@ -65,6 +60,12 @@ public class GeneticAlgorithm{
     }
 
 
+    /**
+     * Imprime los padres y los hijos resultantes de un cruce de rutas.
+     * @param parent1 La primera ruta padre.
+     * @param parent2 La segunda ruta padre.
+     * @param childrenList La lista de rutas hijas resultantes del cruce.
+     */
     public static void printCrossover(Route parent1, Route parent2, List<Route>childrenList) {
         if (childrenList.size() != 0){
             System.out.println("Padre 1: " + parent1.path + ", Distancia: " + parent1.distance);
@@ -77,12 +78,21 @@ public class GeneticAlgorithm{
         
     }
 
+    /**
+     * Imprime la ruta original y la ruta mutada junto con sus respectivas distancias.
+     * @param original La ruta original.
+     * @param mutated La ruta mutada.
+     */
     public static void printMutation(Route original, Route mutated) {
         System.out.println("Original: " + original.path + ", Distancia: " + original.distance);
         System.out.println("Mutado: " + mutated.path + ", Distancia: " + mutated.distance);
         System.out.println("--------------------");
     }
 
+    /**
+     * Imprime las mejores nuevas rutas con su respectiva distancia.
+     * @param bestNewRoutes Lista de las mejores nuevas rutas.
+     */
     public static void printBestnewRoutes(List<Route> bestNewRoutes) {
         System.out.println("Mejores nuevas rutas: ");
         for (int i = 0; i < bestNewRoutes.size(); i++) {
@@ -91,6 +101,22 @@ public class GeneticAlgorithm{
         System.out.println("--------------------");
     }
 
+    
+/**
+ * La función `mutate` toma una ruta, una población de rutas y un grafo como entrada, verifica si la
+ * ruta está duplicada en la población y, de ser así, aplica una mutación a la ruta intercambiando dos
+ * vértices si hay un borde. entre ellos y devuelve la ruta mutada.
+ * 
+ * @param route El parámetro de ruta es un objeto de tipo Ruta, que representa una ruta específica en
+ * un gráfico. Contiene una lista de números enteros que representan la ruta de la ruta y un número
+ * entero que representa la distancia de la ruta.
+ * @param population El parámetro de población es una lista de objetos de ruta. Cada objeto Ruta
+ * representa una posible solución a un problema y la población es una colección de estas soluciones.
+ * @param graph El parámetro "gráfico" es una matriz 2D que representa el gráfico de vértices y
+ * aristas. Cada elemento `graph[i][j]` representa el peso o la distancia entre el vértice `i` y el
+ * vértice `j`.
+ * @return El método devuelve un objeto Ruta.
+ */
     public static Route mutate(Route route, List<Route> population, int[][] graph) {
         countAssig++;
         countAssig++;
@@ -163,6 +189,27 @@ public class GeneticAlgorithm{
     }
     
     
+    /**
+     * La función geneticAlgorithm implementa un algoritmo genético para encontrar las mejores rutas
+     * entre un origen y un destino en un gráfico.
+     * 
+     * @param populationSize El tamaño de la población es el número de individuos (rutas) en cada
+     * generación del algoritmo genético. Determina la diversidad de la población y afecta la velocidad
+     * de convergencia del algoritmo.
+     * @param origin El parámetro de origen representa el vértice inicial del gráfico. Es el vértice
+     * desde donde comenzarán las rutas.
+     * @param destination El parámetro "destino" representa el vértice o nodo del gráfico donde debe
+     * terminar la ruta.
+     * @param generations El parámetro "generaciones" representa el número de iteraciones o
+     * generaciones que se ejecutará el algoritmo genético. Cada generación implica seleccionar los
+     * mejores individuos de la población actual, realizar cruces para crear nuevos individuos y
+     * actualizar la población para la próxima generación. El algoritmo repetirá este proceso durante
+     * el número especificado de
+     * @param graph El parámetro "gráfico" es una matriz 2D que representa las distancias entre los
+     * vértices de un gráfico. Cada elemento de la matriz representa la distancia entre dos vértices.
+     * Por ejemplo, el gráfico [i] [j] representa la distancia entre el vértice i y el vértice j.
+     * @return El método devuelve una lista de objetos de ruta.
+     */
     public static List<Route> geneticAlgorithm(int populationSize, int origin, int destination, int generations, int[][] graph) {
         countAssig++;
         countAssig++;
@@ -273,5 +320,4 @@ public class GeneticAlgorithm{
         countAssig++;
         return population;
     }
-    
 }
